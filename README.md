@@ -18,6 +18,7 @@ Generate common qr-code, artistic qr-code (black & white or colorized), animated
 ![screenshot](https://github.com/LSUDOKO/QR-CODE-GENERATE/blob/8826c1dd8a08a8030b0cbd072353431523621834/green_datadark_qrcode.png)
 ![screenshot](https://github.com/LSUDOKO/QR-CODE-GENERATE/blob/8826c1dd8a08a8030b0cbd072353431523621834/green_datamodules_qrcode.png)
 ![screenshot](https://github.com/LSUDOKO/QR-CODE-GENERATE/blob/8826c1dd8a08a8030b0cbd072353431523621834/lightblue_qrcode.png)
+![screenshot](![screenshot](https://github.com/LSUDOKO/QR-CODE-GENERATE/blob/8826c1dd8a08a8030b0cbd072353431523621834/lightblue_qrcode.png))
 
 
 
