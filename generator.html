@@ -382,11 +382,63 @@
                             <h3 class="section-subtitle"><i class="fas fa-palette"></i> Appearance</h3>
                             <div class="options-grid">
                                 <div class="form-group">
+                                    <label for="qrSize">QR Code Size:</label>
+                                    <input type="range" id="qrSize" name="size" min="100" max="400" value="250" step="10">
+                                    <span id="sizeValue">250 x 250</span>
+                                    <p class="form-hint">Adjust the size of your QR code</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Color Style:</label>
+                                    <div class="radio-group">
+                                        <label>
+                                            <input type="radio" name="colorStyle" value="solid" checked> 
+                                            <span class="radio-label">Solid Color</span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="colorStyle" value="gradient"> 
+                                            <span class="radio-label">Gradient</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" id="solidColorGroup">
                                     <label for="foregroundColor">Foreground Color:</label>
                                     <div class="color-input-group">
                                         <input type="color" id="foregroundColor" name="fgColor" value="#000000">
                                         <span class="color-preview" style="background-color: #000000;"></span>
                                         <span class="color-hex" id="fgColorHex">#000000</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group gradient-group" id="gradientColorGroup" style="display: none;">
+                                    <label>Gradient Colors:</label>
+                                    <div class="color-input-group" style="margin-bottom: 10px;">
+                                        <label for="gradientColor1">Start:</label>
+                                        <input type="color" id="gradientColor1" name="gradientColor1" value="#000000">
+                                        <span class="color-preview" style="background-color: #000000;"></span>
+                                        <span class="color-hex" id="gradientColor1Hex">#000000</span>
+                                    </div>
+                                    <div class="color-input-group">
+                                        <label for="gradientColor2">End:</label>
+                                        <input type="color" id="gradientColor2" name="gradientColor2" value="#0000FF">
+                                        <span class="color-preview" style="background-color: #0000FF;"></span>
+                                        <span class="color-hex" id="gradientColor2Hex">#0000FF</span>
+                                    </div>
+                                    <div class="color-input-group" style="margin-top: 10px;">
+                                        <label for="gradientType">Type:</label>
+                                        <select id="gradientType">
+                                            <option value="linear">Linear</option>
+                                            <option value="radial">Radial</option>
+                                        </select>
+                                    </div>
+                                    <div class="color-input-group" id="linearDirectionGroup" style="margin-top: 10px;">
+                                        <label for="gradientDirection">Direction:</label>
+                                        <select id="gradientDirection">
+                                            <option value="horizontal">Horizontal</option>
+                                            <option value="vertical">Vertical</option>
+                                            <option value="diagonal">Diagonal</option>
+                                        </select>
                                     </div>
                                 </div>
                                 
@@ -399,21 +451,6 @@
                                     </div>
                                 </div>
                             </div>
-                        
-                        <div class="form-group">
-                            <label for="qrSize">QR Code Size:</label>
-                            <input type="range" id="qrSize" name="size" min="100" max="400" value="250" step="10">
-                            <span id="sizeValue">250 x 250</span>
-                            <p class="form-hint">Adjust the size of your QR code</p>
-                        </div>
-                          <div class="form-group">
-                            <label for="userBackgroundImage">Upload Background Image:</label>
-                            <input type="file" id="userBackgroundImage" name="userBgImage" accept="image/*">
-                            <div id="imagePreview" class="image-preview">
-                                <span class="preview-placeholder">No image selected</span>
-                            </div>
-                            <p class="form-hint">Optional: Select an image to use as a background.</p>
-                        </div>
                         
                         <div class="form-group">
                             <label>QR Code Style:</label>
@@ -437,7 +474,7 @@
                             </div>
                         </div>
                         
-                        <button type="submit" class="btn primary-btn">Generate QR Code</button>
+                        <button type="submit" class="btn primary-btn generate-btn"><i class="fas fa-cogs"></i>Generate QR Code</button>
                     </form>
                 </div>
                 

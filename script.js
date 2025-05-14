@@ -28,13 +28,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const foregroundColor = document.getElementById('foregroundColor');
         const backgroundColor = document.getElementById('backgroundColor');
         const qrSize = document.getElementById('qrSize');
-        const userBackgroundImageInput = document.getElementById('userBackgroundImage'); // ADDED
-        const imagePreview = document.getElementById('imagePreview');
-        const canvas = document.createElement('canvas');
+        
+        // Gradient elements
+        const colorStyleRadios = document.querySelectorAll('input[name="colorStyle"]');
+        const solidColorGroup = document.getElementById('solidColorGroup');
+        const gradientColorGroup = document.getElementById('gradientColorGroup');
+        const gradientColor1 = document.getElementById('gradientColor1');
+        const gradientColor2 = document.getElementById('gradientColor2');
+        const gradientColor1Hex = document.getElementById('gradientColor1Hex');
+        const gradientColor2Hex = document.getElementById('gradientColor2Hex');
+        const gradientType = document.getElementById('gradientType');
+        const gradientDirection = document.getElementById('gradientDirection');
+        const linearDirectionGroup = document.getElementById('linearDirectionGroup');
+        
         let qrCode;
-        let userUploadedBgSrc = null; // ADDED: To store the data URL of user-uploaded image
 
-        // Initialize QR code
+        // Generate QR code
         function generateQRCode() {
             // Clear previous QR codes first by emptying the container
             qrCanvas.innerHTML = '';
@@ -45,34 +54,232 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const url = urlInput.value.trim() || 'https://example.com';
             const size = parseInt(qrSize.value);
-            const fgColor = foregroundColor.value;
-            const bgColor = backgroundColor.value;
             
+            // Create QR Code with initial settings
             qrCode = new QRCode(qrCanvas, {
                 text: url,
                 width: size,
                 height: size,
-                colorDark: fgColor,
-                colorLight: bgColor,
-                correctLevel: QRCode.CorrectLevel.H // High error correction for better readability with backgrounds
+                colorDark: foregroundColor.value, // This may be overridden by gradient
+                colorLight: backgroundColor.value,
+                correctLevel: QRCode.CorrectLevel.H // High error correction for better readability
             });
-            
-            // Apply dot style first, then background image if needed
+
+            // Apply custom styles after initial QR generation
             setTimeout(() => {
                 const dotStyle = document.querySelector('input[name="dotStyle"]:checked').value;
-                if (dotStyle !== 'square') {
-                    applyDotStyle(); // This function will internally check for userUploadedBgSrc
-                } else if (userUploadedBgSrc) { // MODIFIED: Check if user uploaded an image
-                    // If square style and has user background image
-                    applyBackgroundImage(userUploadedBgSrc); // MODIFIED: Pass the uploaded image src
+                const colorStyle = document.querySelector('input[name="colorStyle"]:checked').value;
+                const qrImg = qrCanvas.querySelector('img');
+                
+                // Only proceed if the QR image exists
+                if (qrImg) {
+                    // Wait until QR image is fully loaded
+                    if (!qrImg.complete) {
+                        qrImg.onload = function() {
+                            applyCustomStyle(dotStyle, colorStyle);
+                        };
+                    } else {
+                        applyCustomStyle(dotStyle, colorStyle);
+                    }
+                } else {
+                    console.error("QR image not found in canvas");
                 }
-                // If square style and NO userUploadedBgSrc, qrcode.js handled it.
-            }, 100);
+            }, 200); // Longer timeout for reliability
             
             // Enable download button
             downloadBtn.disabled = false;
         }
-        
+
+        // Function to apply custom styles
+        function applyCustomStyle(dotStyle, colorStyle) {
+            const qrImg = qrCanvas.querySelector('img');
+            if (!qrImg) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match QR code
+            const size = parseInt(qrSize.value);
+            canvas.width = size;
+            canvas.height = size;
+
+            // Wait for QR image to be fully loaded
+            if (!qrImg.complete) {
+                qrImg.onload = function() {
+                    proceedWithStyling();
+                };
+            } else {
+                proceedWithStyling();
+            }
+
+            function proceedWithStyling() {
+                // Fill the background
+                ctx.fillStyle = backgroundColor.value;
+                ctx.fillRect(0, 0, size, size);
+                
+                // Create and apply the styled QR code
+                drawStyledQR(ctx, qrImg, dotStyle, colorStyle, size);
+            }
+        }
+
+        // Helper function to draw the styled QR code
+        function drawStyledQR(ctx, qrImg, dotStyle, colorStyle, size) {
+            // Create temporary canvas to analyze QR code
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = size;
+            tempCanvas.height = size;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Draw original QR to analyze it
+            tempCtx.drawImage(qrImg, 0, 0, size, size);
+            const imageData = tempCtx.getImageData(0, 0, size, size);
+
+            // Get the actual module count from the QR code
+            // This is more accurate than using a fixed divisor
+            let moduleCount = 0;
+            // Find the first dark pixel
+            let firstDarkX = 0;
+            let firstDarkY = 0;
+            let foundFirst = false;
+
+            // Find the first dark pixel
+            for (let y = 0; y < size && !foundFirst; y++) {
+                for (let x = 0; x < size && !foundFirst; x++) {
+                    const pixelIndex = (y * size + x) * 4;
+                    if (imageData.data[pixelIndex] < 128) { // Dark pixel
+                        firstDarkX = x;
+                        firstDarkY = y;
+                        foundFirst = true;
+                    }
+                }
+            }
+
+            // Count modules in one row
+            if (foundFirst) {
+                let lastDarkX = firstDarkX;
+                // Find the last black pixel in the same row
+                for (let x = firstDarkX; x < size; x++) {
+                    const pixelIndex = (firstDarkY * size + x) * 4;
+                    if (imageData.data[pixelIndex] < 128) { // Dark pixel
+                        lastDarkX = x;
+                    }
+                }
+
+                // Now count transitions from dark to light in this row
+                let isInDark = true; // We start in a dark module since firstDarkX is dark
+                let moduleStartX = firstDarkX;
+                let count = 0;
+
+                for (let x = firstDarkX + 1; x <= lastDarkX; x++) {
+                    const pixelIndex = (firstDarkY * size + x) * 4;
+                    const isDark = imageData.data[pixelIndex] < 128;
+                    
+                    if (isDark !== isInDark) { // We've found a transition
+                        count++;
+                        isInDark = isDark;
+                    }
+                }
+                
+                moduleCount = Math.ceil(count / 2) + 1; // +1 because we count transitions, not modules
+            }
+
+            // Use a default if we couldn't determine
+            if (moduleCount < 21) { // Minimum size for QR
+                moduleCount = 25; // Default estimate
+            }
+
+            const moduleSize = size / moduleCount;
+
+            // Create gradient if needed
+            let gradient = null;
+            if (colorStyle === 'gradient' && gradientColor1 && gradientColor2) {
+                if (gradientType.value === 'linear') {
+                    // Create linear gradient
+                    switch(gradientDirection.value) {
+                        case 'horizontal':
+                            gradient = ctx.createLinearGradient(0, 0, size, 0);
+                            break;
+                        case 'vertical':
+                            gradient = ctx.createLinearGradient(0, 0, 0, size);
+                            break;
+                        case 'diagonal':
+                        default:
+                            gradient = ctx.createLinearGradient(0, 0, size, size);
+                            break;
+                    }
+                } else { // radial
+                    // Create radial gradient from center
+                    gradient = ctx.createRadialGradient(
+                        size/2, size/2, 0,
+                        size/2, size/2, size/2
+                    );
+                }
+                
+                // Add colors to gradient
+                gradient.addColorStop(0, gradientColor1.value);
+                gradient.addColorStop(1, gradientColor2.value);
+            }
+
+            // Draw the modules
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    const x = Math.floor(col * moduleSize);
+                    const y = Math.floor(row * moduleSize);
+                    const centerX = x + moduleSize / 2;
+                    const centerY = y + moduleSize / 2;
+                    
+                    // Check if this is a dark module
+                    const pixelIndex = (Math.floor(y + moduleSize/2) * size + Math.floor(x + moduleSize/2)) * 4;
+                    if (imageData.data[pixelIndex] < 128) { // Dark module
+                        // Set fill style based on color options
+                        if (colorStyle === 'gradient' && gradient) {
+                            ctx.fillStyle = gradient;
+                        } else {
+                            ctx.fillStyle = foregroundColor.value;
+                        }
+                        
+                        if (dotStyle === 'rounded') {
+                            // Draw rounded rectangle
+                            const radius = moduleSize / 3;
+                            ctx.beginPath();
+                            ctx.moveTo(x + radius, y);
+                            ctx.lineTo(x + moduleSize - radius, y);
+                            ctx.quadraticCurveTo(x + moduleSize, y, x + moduleSize, y + radius);
+                            ctx.lineTo(x + moduleSize, y + moduleSize - radius);
+                            ctx.quadraticCurveTo(x + moduleSize, y + moduleSize, x + moduleSize - radius, y + moduleSize);
+                            ctx.lineTo(x + radius, y + moduleSize);
+                            ctx.quadraticCurveTo(x, y + moduleSize, x, y + moduleSize - radius);
+                            ctx.lineTo(x, y + radius);
+                            ctx.quadraticCurveTo(x, y, x + radius, y);
+                            ctx.closePath();
+                            ctx.fill();
+                        } else if (dotStyle === 'dots') {
+                            // Draw circle
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, moduleSize / 2 * 0.85, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else if (dotStyle === 'diamond') {
+                            // Draw diamond
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, y);
+                            ctx.lineTo(x + moduleSize, centerY);
+                            ctx.lineTo(centerX, y + moduleSize);
+                            ctx.lineTo(x, centerY);
+                            ctx.closePath();
+                            ctx.fill();
+                        } else {
+                            // Default square style
+                            ctx.fillRect(x, y, moduleSize, moduleSize);
+                        }
+                    }
+                }
+            }
+
+            // Update the QR code image
+            const qrContainer = qrCanvas.querySelector('img');
+            qrContainer.src = canvas.toDataURL('image/png');
+        }
+
         // Handle form submission
         qrForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -84,38 +291,21 @@ document.addEventListener('DOMContentLoaded', function() {
             input.addEventListener('change', generateQRCode);
         });
 
-        // Event listener for user-uploaded background image
-        if (userBackgroundImageInput) {
-            userBackgroundImageInput.addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        userUploadedBgSrc = e.target.result;
-                        imagePreview.innerHTML = ''; // Clear previous preview
-                        const preview = document.createElement('img');
-                        preview.src = userUploadedBgSrc;
-                        preview.style.maxWidth = '100px';
-                        preview.style.maxHeight = '100px';
-                        preview.style.borderRadius = '5px';
-                        imagePreview.appendChild(preview);
-                        generateQRCode(); // Regenerate QR code with new background
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    userUploadedBgSrc = null;
-                    imagePreview.innerHTML = '<span class="preview-placeholder">No image selected</span>'; // Reset preview
-                    generateQRCode(); // Regenerate QR code without background
-                }
-            });
-        }
-
         // For color inputs, regenerate on 'change' but update UI on 'input'
-        [foregroundColor, backgroundColor].forEach(colorInput => {
+        [foregroundColor, backgroundColor, gradientColor1, gradientColor2].forEach(colorInput => {
+            if (!colorInput) return; // Skip if element doesn't exist
+            
             colorInput.addEventListener('change', generateQRCode); // Regenerate QR on final color selection
             colorInput.addEventListener('input', function() { // Update UI elements in real-time
-                const hexDisplayId = this.id === 'foregroundColor' ? 'fgColorHex' : 'bgColorHex';
-                document.getElementById(hexDisplayId).textContent = this.value;
+                let hexDisplayId;
+                if (this.id === 'foregroundColor') hexDisplayId = 'fgColorHex';
+                else if (this.id === 'backgroundColor') hexDisplayId = 'bgColorHex';
+                else if (this.id === 'gradientColor1') hexDisplayId = 'gradientColor1Hex';
+                else if (this.id === 'gradientColor2') hexDisplayId = 'gradientColor2Hex';
+                
+                if (hexDisplayId) {
+                    document.getElementById(hexDisplayId).textContent = this.value;
+                }
                 
                 // Update the color preview circle next to the input
                 const previewSpan = this.nextElementSibling;
@@ -125,76 +315,42 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
+        // Toggle between solid color and gradient options
+        colorStyleRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'solid') {
+                    solidColorGroup.style.display = 'block';
+                    gradientColorGroup.style.display = 'none';
+                } else {
+                    solidColorGroup.style.display = 'none';
+                    gradientColorGroup.style.display = 'block';
+                }
+                generateQRCode();
+            });
+        });
+        
+        // Handle gradient type change to show/hide direction dropdown
+        if (gradientType) {
+            gradientType.addEventListener('change', function() {
+                if (this.value === 'linear' && linearDirectionGroup) {
+                    linearDirectionGroup.style.display = 'block';
+                } else if (linearDirectionGroup) {
+                    linearDirectionGroup.style.display = 'none';
+                }
+                generateQRCode();
+            });
+        }
+        
+        // Also regenerate QR code when gradient options change
+        if (gradientDirection) {
+            gradientDirection.addEventListener('change', generateQRCode);
+        }
+        
         // Also listen for radio button changes for QR style
         document.querySelectorAll('input[name="dotStyle"]').forEach(radio => {
             radio.addEventListener('change', generateQRCode);
         });
-        
-        // Apply background image to QR code
-        function applyBackgroundImage(imageSrc) {
-            if (!qrCode || !imageSrc) return; // MODIFIED: Added !imageSrc check
 
-            const qrImg = qrCanvas.querySelector('img');
-            if (!qrImg) return; // Ensure qrImg exists
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas size to match QR code
-            canvas.width = parseInt(qrSize.value);
-            canvas.height = parseInt(qrSize.value);
-            
-            // Create background image
-            const bgImg = new Image();
-            bgImg.onload = function() {
-                // Draw background first (scaled to fit)
-                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-                
-                // Modified approach for better scannability with visible background
-                // First, analyze the QR code image to identify dark modules
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = qrImg.width;
-                tempCanvas.height = qrImg.height;
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.drawImage(qrImg, 0, 0);
-                
-                // Get the QR code pixel data
-                const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                const data = imageData.data;
-                
-                // Create a transparent output for the QR code
-                const outputData = tempCtx.createImageData(tempCanvas.width, tempCanvas.height);
-                const outData = outputData.data;
-                
-                // Process each pixel
-                for (let i = 0; i < data.length; i += 4) {
-                    // If it's a dark pixel in the original QR code (dark modules)
-                    if (data[i] < 128) {
-                        // Make it black with 85% opacity - dark enough to scan but slightly transparent
-                        outData[i] = 0;      // R
-                        outData[i+1] = 0;    // G
-                        outData[i+2] = 0;    // B
-                        outData[i+3] = 215;  // Alpha (85% of 255 = ~215)
-                    } else {
-                        // Light modules are completely transparent
-                        outData[i] = 0;
-                        outData[i+1] = 0;
-                        outData[i+2] = 0;
-                        outData[i+3] = 0;  // Fully transparent
-                    }
-                }
-                
-                // Put the modified data back to temp canvas
-                tempCtx.putImageData(outputData, 0, 0);
-                
-                // Draw the modified QR code on top of the background
-                ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-                
-                // Replace QR image with our combined image
-                qrImg.src = canvas.toDataURL('image/png');
-            };
-            bgImg.src = imageSrc;
-        }
-        
         // Handle download button
         downloadBtn.addEventListener('click', function() {
             const qrImg = qrCanvas.querySelector('img');
@@ -208,99 +364,9 @@ document.addEventListener('DOMContentLoaded', function() {
             a.click();
             document.body.removeChild(a);
         });
-        
+
         // Generate initial QR code
         generateQRCode();
-        
-        // Apply QR code dot style
-        function applyDotStyle() {
-            setTimeout(() => {
-                const qrImg = qrCanvas.querySelector('img');
-                if (!qrImg || !qrCode || !qrCode.qrcode || typeof qrCode.qrcode.isDark !== 'function' || typeof qrCode.qrcode.moduleCount === 'undefined') {
-                    console.error("QR code object not ready or isDark/moduleCount not available for styling.");
-                    if (userUploadedBgSrc) {
-                        applyBackgroundImage(userUploadedBgSrc);
-                    }
-                    return;
-                }
-
-                const style = document.querySelector('input[name="dotStyle"]:checked').value;
-
-                if (style === 'square') {
-                    if (userUploadedBgSrc) {
-                        applyBackgroundImage(userUploadedBgSrc);
-                    }
-                    return;
-                }
-
-                const outputCanvas = document.createElement('canvas');
-                const ctx = outputCanvas.getContext('2d');
-                
-                const outputSize = parseInt(qrSize.value);
-                outputCanvas.width = outputSize;
-                outputCanvas.height = outputSize;
-                
-                ctx.fillStyle = backgroundColor.value;
-                ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
-                
-                ctx.fillStyle = foregroundColor.value;
-                
-                const moduleCount = qrCode.qrcode.moduleCount;
-                if (moduleCount === 0) {
-                    console.error("Module count is zero, cannot apply style.");
-                    return;
-                }
-
-                const moduleSize = outputCanvas.width / moduleCount;
-
-                for (let row = 0; row < moduleCount; row++) {
-                    for (let col = 0; col < moduleCount; col++) {
-                        if (qrCode.qrcode.isDark(row, col)) {
-                            const x = col * moduleSize;
-                            const y = row * moduleSize;
-                            const centerX = x + moduleSize / 2;
-                            const centerY = y + moduleSize / 2;
-                            
-                            if (style === 'rounded') {
-                                const radius = moduleSize / 3;
-                                ctx.beginPath();
-                                ctx.moveTo(x + radius, y);
-                                ctx.lineTo(x + moduleSize - radius, y);
-                                ctx.quadraticCurveTo(x + moduleSize, y, x + moduleSize, y + radius);
-                                ctx.lineTo(x + moduleSize, y + moduleSize - radius);
-                                ctx.quadraticCurveTo(x + moduleSize, y + moduleSize, x + moduleSize - radius, y + moduleSize);
-                                ctx.lineTo(x + radius, y + moduleSize);
-                                ctx.quadraticCurveTo(x, y + moduleSize, x, y + moduleSize - radius);
-                                ctx.lineTo(x, y + radius);
-                                ctx.quadraticCurveTo(x, y, x + radius, y);
-                                ctx.closePath();
-                                ctx.fill();
-                            } else if (style === 'dots') { // 'dots' is the value for circular dots
-                                ctx.beginPath();
-                                ctx.arc(centerX, centerY, (moduleSize / 2) * 0.85, 0, Math.PI * 2); // Relative radius
-                                ctx.fill();
-                            } else if (style === 'diamond') {
-                                ctx.beginPath();
-                                ctx.moveTo(x + moduleSize / 2, y); // Top point
-                                ctx.lineTo(x + moduleSize, y + moduleSize / 2); // Right point
-                                ctx.lineTo(x + moduleSize / 2, y + moduleSize); // Bottom point
-                                ctx.lineTo(x, y + moduleSize / 2); // Left point
-                                ctx.closePath();
-                                ctx.fill();
-                            }
-                        }
-                    }
-                }
-                
-                qrImg.src = outputCanvas.toDataURL('image/png');
-                
-                if (userUploadedBgSrc) {
-                    setTimeout(() => {
-                        applyBackgroundImage(userUploadedBgSrc);
-                    }, 50);
-                }
-            }, 100);
-        }
     }
 
     // Smooth scrolling for anchor links
