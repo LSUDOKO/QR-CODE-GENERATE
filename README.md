@@ -1,90 +1,85 @@
-# QR Code Generation Using Python 🆔
+# QR-CODE-GENERATE
 
-This project demonstrates how to generate QR codes in Python. QR codes are two-dimensional barcodes that store information such as URLs, text, or other data. With Python libraries, you can easily create and customize QR codes for various applications.
-## Features 🔩
-  - 🔐 Generate QR codes from text or URLs.
+A collection of Python scripts that demonstrate various ways to generate and customize QR codes using the `qrcode` and `segno` libraries. Output images are saved in the project root or the `images/` folder.
 
-  - 🎨 Customize QR codes with different colors and sizes.
+## Table of Contents
 
-  - 🕸️ Add logos or images to your QR codes.
+- [Features](#features)  
+- [Prerequisites](#prerequisites)  
+- [Installation](#installation)  
+- [Usage](#usage)  
+- [Scripts](#scripts)  
+- [Images](#images)  
+- [CI/CD](#cicd)  
+- [License](#license)  
 
-  - 🛶 Save QR codes as images (e.g., PNG, JPG).
-## Requirements 🔢
-To run this project, you need the following Python libraries installed:
+## Features
 
-qrcode: For generating QR codes.
+- Generate simple QR codes from text/URLs  
+- Customize colors (`fill_color`, `back_color`, `light`, `dark`)  
+- Rotate QR codes and save as images  
+- Create animated/artistic QR codes  
+- Save outputs as PNG/GIF  
 
-Pillow: For adding customization to QR codes (e.g., colors, logos).
+## Prerequisites
 
-Install dependencies using pip:
-```pip install qrcode[pil]```
-## Getting Started 🚀
-Clone this repository or download the source files.
+- Python 3.6+  
+- `qrcode[pil]`  
+- `segno`  
+- `Pillow`  
 
-Open the terminal or command prompt in the project directory.
+## Installation
 
-Run the Python script to generate a QR code.
-
-## How It Works 🤖
-
-1. Generating a Simple QR Code
-
-The qrcode library generates a QR code from the provided input (e.g., text or URL).
-
-2. Customizing the QR Code
-
-You can:
-
-Change the foreground and background colors.
-
-Adjust the size of the QR code.
-
-Overlay a logo or image.
-
-3. Saving the QR Code
-
-Save the generated QR code as an image file in your desired format.
-## Example Code 📝
-```import qrcode
-from PIL import Image
-
-def generate_qr_code(data, file_name="qrcode.png"):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
-
-    # Customize colors
-    img = qr.make_image(fill_color="blue", back_color="white")
-
-    # Save QR code
-    img.save(file_name)
-    print(f"QR code saved as {file_name}")
-
-# Example usage
-generate_qr_code("https://www.example.com", file_name="custom_qrcode.png")
+```sh
+pip install qrcode[pil] segno pillow
 ```
 
-## Customization Options 🎨
+## Usage
 
-Text or URL: Input any text or link to encode in the QR code.
+Run any of the scripts from the project root:
 
-Colors: Change fill_color and back_color in the script.
+```sh
+python QR-CODE-GENERATE/qrcodegeneration.py
+python QR-CODE-GENERATE/qrcode2.py
+python QR-CODE-GENERATE/qrcode3.py
+python QR-CODE-GENERATE/qrcode4.py
+python QR-CODE-GENERATE/qrcode6.py
+python QR-CODE-GENERATE/qrcode7.py
+python QR-CODE-GENERATE/qrcodee5.py
+```
 
-Logo: Overlay an image on the QR code for branding.
+Each script will generate an image (PNG/GIF) in the current directory or you can move them into `images/` for organization.
 
-## Future Enhancements 🌐
+## Scripts
 
-Add animated QR codes.
+- [qrcodegeneration.py](qrcodegeneration.py) – basic QR code using `qrcode` + `Pillow`  
+- [qrcode2.py](qrcode2.py) – light-blue QR code with border using `segno`  
+- [qrcode3.py](qrcode3.py) – dark-blue QR code with custom quiet zone  
+- [qrcode4.py](qrcode4.py) – green data modules on blue code  
+- [qrcode6.py](qrcode6.py) – rotated QR code saved as PNG  
+- [qrcode7.py](qrcode7.py) – animated QR code (GIF) with background image  
+- [qrcodee5.py](qrcodee5.py) – colored modules and background using `segno`  
 
-Generate batch QR codes from a list of inputs.
+## Images
 
-Create a web interface for QR code generation.
+All generated images are available in the [images/](images/) directory:
 
-## License 🔒
+```text
+animated_qrcode.gif
+darkblue_qrcode.png
+formatted_rotated_qrcode.png
+green_datadark_qrcode.png
+green_datamodules_qrcode.png
+lightblue_qrcode.png
+...
+```
 
-This project is licensed under the MIT License. Feel free to use, modify, and distribute it as needed.
+## CI/CD
+
+GitHub Actions workflow for deploying static content is defined in  
+[.github/workflows/static.yml](.github/workflows/static.yml).
+
+## License
+
+This project is released under the MIT License.  
+See [LICENSE](LICENSE) for details.
