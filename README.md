@@ -1,40 +1,42 @@
-# QR-CODE-GENERATE
+# 📱 QR-CODE-GENERATE 📱
 
 A collection of Python scripts that demonstrate various ways to generate and customize QR codes using the `qrcode` and `segno` libraries. Output images are saved in the project root or the `images/` folder.
 
+![Sample QR Code](images/lightblue_qrcode.png)
+
 ## Table of Contents
 
-- [Features](#features)  
-- [Prerequisites](#prerequisites)  
-- [Installation](#installation)  
-- [Usage](#usage)  
-- [Scripts](#scripts)  
-- [Images](#images)  
-- [CI/CD](#cicd)  
-- [License](#license)  
+- [✨ Features](#-features)  
+- [📋 Prerequisites](#-prerequisites)  
+- [🔧 Installation](#-installation)  
+- [🚀 Usage](#-usage)  
+- [📝 Scripts](#-scripts)  
+- [🖼️ Images](#️-images)  
+- [🔄 CI/CD](#-cicd)  
+- [📄 License](#-license)  
 
-## Features
+## ✨ Features
 
-- Generate simple QR codes from text/URLs  
-- Customize colors (`fill_color`, `back_color`, `light`, `dark`)  
-- Rotate QR codes and save as images  
-- Create animated/artistic QR codes  
-- Save outputs as PNG/GIF  
+- 🔲 Generate simple QR codes from text/URLs  
+- 🎨 Customize colors (`fill_color`, `back_color`, `light`, `dark`)  
+- 🔄 Rotate QR codes and save as images  
+- 🎬 Create animated/artistic QR codes  
+- 💾 Save outputs as PNG/GIF  
 
-## Prerequisites
+## 📋 Prerequisites
 
 - Python 3.6+  
 - `qrcode[pil]`  
 - `segno`  
 - `Pillow`  
 
-## Installation
+## 🔧 Installation
 
 ```sh
 pip install qrcode[pil] segno pillow
 ```
 
-## Usage
+## 🚀 Usage
 
 Run any of the scripts from the project root:
 
@@ -50,7 +52,7 @@ python QR-CODE-GENERATE/qrcodee5.py
 
 Each script will generate an image (PNG/GIF) in the current directory or you can move them into `images/` for organization.
 
-## Scripts
+## 📝 Scripts
 
 - [qrcodegeneration.py](qrcodegeneration.py) – basic QR code using `qrcode` + `Pillow`  
 - [qrcode2.py](qrcode2.py) – light-blue QR code with border using `segno`  
@@ -60,7 +62,7 @@ Each script will generate an image (PNG/GIF) in the current directory or you can
 - [qrcode7.py](qrcode7.py) – animated QR code (GIF) with background image  
 - [qrcodee5.py](qrcodee5.py) – colored modules and background using `segno`  
 
-## Images
+## 🖼️ Images
 
 All generated images are available in the [images/](images/) directory:
 
@@ -74,12 +76,27 @@ lightblue_qrcode.png
 ...
 ```
 
-## CI/CD
+### 📷 Sample Images Gallery
+
+<table>
+  <tr>
+    <td><img src="images/lightblue_qrcode.png" alt="Light Blue QR Code" width="200"/></td>
+    <td><img src="images/darkblue_qrcode.png" alt="Dark Blue QR Code" width="200"/></td>
+    <td><img src="images/green_datamodules_qrcode.png" alt="Green Data Modules QR Code" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="images/formatted_rotated_qrcode.png" alt="Rotated QR Code" width="200"/></td>
+    <td><img src="images/green_datadark_qrcode.png" alt="Green Data Dark QR Code" width="200"/></td>
+    <td><img src="images/animated_qrcode.gif" alt="Animated QR Code" width="200"/></td>
+  </tr>
+</table>
+
+## 🔄 CI/CD
 
 GitHub Actions workflow for deploying static content is defined in  
 [.github/workflows/static.yml](.github/workflows/static.yml).
 
-## License
+## 📄 License
 
 This project is released under the MIT License.  
 See [LICENSE](LICENSE) for details.
