@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .documentation {
+            padding: 80px 0;
+        }
+        
+        .docs-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+        
+        .script-doc {
+            margin-bottom: 50px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 40px;
+        }
+        
+        .script-doc:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .script-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .script-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-right: 20px;
+        }
+        
+        .script-title {
+            font-size: 1.8rem;
+            color: var(--dark-color);
+        }
+        
+        .script-description {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .code-preview {
+            margin-bottom: 25px;
+        }
+        
+        .output-preview {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .output-image {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: #f9f9f9;
+        }
+        
+        .output-image img {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+        
+        .output-description {
+            flex: 1;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        
+        .back-to-home {
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .back-to-home i {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>    <header>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1><i class="fas fa-qrcode"></i> QR Code Generator</h1>
+                    <p>Generate customized QR codes with Python</p>
+                </div>
+                <nav>
+                    <ul style="display: flex; list-style: none; gap: 20px;">
+                        <li><a href="index.html" style="color: white;">Home</a></li>
+                        <li><a href="generator.html" style="color: white;">Generate QR</a></li>
+                        <li><a href="documentation.html" style="color: white;">Documentation</a></li>
+                        <li><a href="contact.html" style="color: white;">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="documentation">
+        <div class="container">
+            <h2 class="section-title">Documentation</h2>
+            
+            <div class="docs-container">
+                <div class="script-doc">
+                    <div class="script-header">
+                        <div class="script-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3 class="script-title">qrcodegeneration.py</h3>
+                    </div>
+                    <p class="script-description">
+                        This is the basic QR code generator script using the <code>qrcode</code> library with PIL (Python Imaging Library) support. 
+                        It creates a simple QR code with black modules on a white background.
+                    </p>
+                    <div class="code-preview">
+                        <pre><code>
+import qrcode
+from PIL import Image
+
+# Create qr code instance
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4,
+)
+
+# Add data
+qr.add_data('https://www.example.com')
+qr.make(fit=True)
+
+# Create an image from the QR Code instance
+img = qr.make_image(fill_color="black", back_color="white")
+img.save("qrcode.png")
+                        </code></pre>
+                    </div>
+                    <div class="output-preview">
+                        <div class="output-image">
+                            <img src="images/lightblue_qrcode.png" alt="Basic QR Code">
+                        </div>
+                        <div class="output-description">
+                            <h4>Parameters Explained:</h4>
+                            <ul>
+                                <li><strong>version</strong>: Controls the size of the QR Code (1-40). Higher values make a bigger code.</li>
+                                <li><strong>error_correction</strong>: Controls the error correction used for the QR Code. L (7%), M (15%), Q (25%), H (30%).</li>
+                                <li><strong>box_size</strong>: Controls how many pixels each "box" of the QR code is.</li>
+                                <li><strong>border</strong>: Controls how many boxes thick the border should be.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-doc">
+                    <div class="script-header">
+                        <div class="script-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3 class="script-title">qrcode2.py</h3>
+                    </div>
+                    <p class="script-description">
+                        This script uses the <code>segno</code> library to create a light blue QR code with a custom border.
+                        Segno is more lightweight than the qrcode library and offers different customization options.
+                    </p>
+                    <div class="code-preview">
+                        <pre><code>
+import segno
+
+# Create QR code instance
+qrcode = segno.make('https://www.example.com')
+
+# Save QR code with light blue color
+qrcode.save(
+    'lightblue_qrcode.png',
+    scale=10,
+    light='lightblue'
+)
+                        </code></pre>
+                    </div>
+                    <div class="output-preview">
+                        <div class="output-image">
+                            <img src="images/lightblue_qrcode.png" alt="Light Blue QR Code">
+                        </div>
+                        <div class="output-description">
+                            <h4>Parameters Explained:</h4>
+                            <ul>
+                                <li><strong>scale</strong>: Controls the size of the QR code (similar to box_size in qrcode).</li>
+                                <li><strong>light</strong>: Sets the background color of the QR code.</li>
+                                <li><strong>dark</strong>: Sets the foreground color (if not specified, defaults to black).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-doc">
+                    <div class="script-header">
+                        <div class="script-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3 class="script-title">qrcode3.py</h3>
+                    </div>
+                    <p class="script-description">
+                        This script creates a dark blue QR code with a custom quiet zone (border) using the <code>segno</code> library.
+                    </p>
+                    <div class="code-preview">
+                        <pre><code>
+import segno
+
+# Create QR code 
+qrcode = segno.make('https://www.example.com')
+
+# Save with dark blue color
+qrcode.save(
+    'darkblue_qrcode.png',
+    scale=10,
+    light='white',
+    dark='darkblue',
+    quiet_zone=4
+)
+                        </code></pre>
+                    </div>
+                    <div class="output-preview">
+                        <div class="output-image">
+                            <img src="images/darkblue_qrcode.png" alt="Dark Blue QR Code">
+                        </div>
+                        <div class="output-description">
+                            <h4>Parameters Explained:</h4>
+                            <ul>
+                                <li><strong>quiet_zone</strong>: Controls the size of the border around the QR code.</li>
+                                <li><strong>dark</strong>: Sets the color of the QR code modules (data elements).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="script-doc">
+                    <div class="script-header">
+                        <div class="script-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                        <h3 class="script-title">qrcode7.py</h3>
+                    </div>
+                    <p class="script-description">
+                        This script demonstrates how to create an animated QR code with a background image using the <code>segno</code> library.
+                    </p>
+                    <div class="code-preview">
+                        <pre><code>
+import segno
+from pathlib import Path
+
+# Create QR code
+qrcode = segno.make('https://www.example.com')
+out = Path('animated_qrcode.gif')
+
+# Create animated QR code
+qrcode.to_artistic(
+    background='background.png',
+    target=out,
+    scale=10
+)
+                        </code></pre>
+                    </div>
+                    <div class="output-preview">
+                        <div class="output-image">
+                            <img src="images/animated_qrcode.gif" alt="Animated QR Code">
+                        </div>
+                        <div class="output-description">
+                            <h4>Parameters Explained:</h4>
+                            <ul>
+                                <li><strong>to_artistic</strong>: Method to create QR codes with background images or artistic effects.</li>
+                                <li><strong>background</strong>: The path to the background image to use.</li>
+                                <li><strong>target</strong>: The output file path (can be PNG, GIF, or other formats).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <a href="index.html" class="back-to-home">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 QR Code Generator. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

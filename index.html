@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>    <header>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1><i class="fas fa-qrcode"></i> QR Code Generator</h1>
+                    <p>Generate customized QR codes with Python</p>
+                </div>
+                <nav>
+                    <ul style="display: flex; list-style: none; gap: 20px;">
+                        <li><a href="index.html" style="color: white;">Home</a></li>
+                        <li><a href="generator.html" style="color: white;">Generate QR</a></li>
+                        <li><a href="documentation.html" style="color: white;">Documentation</a></li>
+                        <li><a href="contact.html" style="color: white;">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">                <div class="hero-text">
+                    <h2>Create Beautiful & Functional QR Codes</h2>
+                    <p>A collection of Python scripts that demonstrate various ways to generate and customize QR codes using the qrcode and segno libraries.</p>
+                    <div class="cta-buttons">
+                        <a href="generator.html" class="btn primary-btn">Create Your QR Code</a>
+                        <a href="https://github.com/yourusername/QR-CODE-GENERATE" class="btn secondary-btn">GitHub Repo</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="images/animated_qrcode.gif" alt="Animated QR Code">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Features</h2>
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <i class="fas fa-palette"></i>
+                    <h3>Customizable Colors</h3>
+                    <p>Change fill colors, background colors, and create visually appealing QR codes</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>Rotation Support</h3>
+                    <p>Rotate QR codes at different angles while maintaining scannability</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-film"></i>
+                    <h3>Animated QR Codes</h3>
+                    <p>Create animated GIF QR codes for more engaging experiences</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-image"></i>
+                    <h3>Multiple Formats</h3>
+                    <p>Save your QR codes as PNG or GIF images</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery">
+        <div class="container">
+            <h2 class="section-title">Gallery</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="images/lightblue_qrcode.png" alt="Light Blue QR Code">
+                    <div class="gallery-caption">Light Blue QR Code</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/darkblue_qrcode.png" alt="Dark Blue QR Code">
+                    <div class="gallery-caption">Dark Blue QR Code</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/green_datamodules_qrcode.png" alt="Green Data QR Code">
+                    <div class="gallery-caption">Green Data Modules</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/formatted_rotated_qrcode.png" alt="Rotated QR Code">
+                    <div class="gallery-caption">Rotated QR Code</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/green_datadark_qrcode.png" alt="Green Data Dark QR Code">
+                    <div class="gallery-caption">Green on Dark Background</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/animated_qrcode.gif" alt="Animated QR Code">
+                    <div class="gallery-caption">Animated QR Code</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="code-examples">
+        <div class="container">
+            <h2 class="section-title">Code Examples</h2>
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="basic">Basic QR Code</button>
+                    <button class="tab-btn" data-tab="colored">Colored QR Code</button>
+                    <button class="tab-btn" data-tab="animated">Animated QR Code</button>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="basic">
+                        <pre><code>
+import qrcode
+from PIL import Image
+
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4,
+)
+qr.add_data('https://example.com')
+qr.make(fit=True)
+
+img = qr.make_image(fill_color="black", back_color="white")
+img.save("basic_qrcode.png")
+                        </code></pre>
+                    </div>
+                    <div class="tab-pane" id="colored">
+                        <pre><code>
+import segno
+
+qrcode = segno.make('https://example.com')
+qrcode.save(
+    'colored_qrcode.png',
+    scale=10,
+    light='lightblue',
+    dark='darkblue'
+)
+                        </code></pre>
+                    </div>
+                    <div class="tab-pane" id="animated">
+                        <pre><code>
+import segno
+from pathlib import Path
+
+qrcode = segno.make('https://example.com')
+out = Path('animated_qrcode.gif')
+
+# Create animated QR code (GIF)
+qrcode.to_artistic(
+    background='images/background.png',
+    target=out,
+    scale=10,
+    light='white',
+    dark='black'
+)
+                        </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="installation">
+        <div class="container">
+            <h2 class="section-title">Installation</h2>
+            <div class="installation-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Clone the Repository</h3>
+                        <pre><code>git clone https://github.com/yourusername/QR-CODE-GENERATE.git
+cd QR-CODE-GENERATE</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Install Dependencies</h3>
+                        <pre><code>pip install qrcode[pil] segno pillow</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Run the Scripts</h3>
+                        <pre><code>python qrcodegeneration.py</code></pre>
+                    </div>
+                </div>            </div>
+        </div>
+    </section>
+
+    <section class="generator-promo">
+        <div class="container">
+            <div class="promo-content" style="display: flex; align-items: center; gap: 40px; background-color: #f5f7fa; padding: 50px; border-radius: 10px; margin: 40px 0;">
+                <div class="promo-text" style="flex: 1;">
+                    <h2>Create Your Own Custom QR Code Now</h2>
+                    <p>Our interactive QR code generator allows you to customize colors, add background images, and create QR codes that match your brand or personal style.</p>
+                    <a href="generator.html" class="btn primary-btn">Start Creating</a>
+                </div>
+                <div class="promo-image" style="flex: 1; text-align: center;">
+                    <img src="images/arpit.png" alt="Custom QR Code Example" style="max-width: 250px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 QR Code Generator. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
